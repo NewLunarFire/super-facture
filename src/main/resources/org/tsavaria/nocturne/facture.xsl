@@ -15,7 +15,8 @@
   limitations under the License.
 -->
 <xsl:stylesheet version="1.1" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:fo="http://www.w3.org/1999/XSL/Format" exclude-result-prefixes="fo">
+                xmlns:fo="http://www.w3.org/1999/XSL/Format"
+                xmlns:util="xalan://org.tsavaria.nocturne.Util" exclude-result-prefixes="fo util">
     <xsl:template match="facture">
         <fo:root>
             <!-- defines the layout master -->
@@ -33,20 +34,27 @@
                 <fo:flow flow-name="xsl-region-body">
 
                     <fo:table font-size="8px">
+                        <fo:table-column column-width="12mm"/>
+                        <fo:table-column column-width="50% - 6mm"/>
+                        <fo:table-column column-width="50% - 6mm"/>
+
                         <fo:table-body>
                             <fo:table-row>
                                 <fo:table-cell>
+                                    <fo:block><fo:external-graphic content-height="10mm" content-width="10mm" src="url(logo.png)" /></fo:block>
+                                </fo:table-cell>
+                                <fo:table-cell>
                                     <fo:block>
-                                        <fo:block>Nom de l'entreprise</fo:block>
-                                        <fo:block>Adresse Postale, Ville, Pays</fo:block>
-                                        <fo:block>Code postal</fo:block>
+                                        <fo:block font-weight="700"><xsl:value-of select="entreprise/nom" /></fo:block>
+                                        <fo:block><xsl:value-of select="entreprise/adresse" /></fo:block>
+                                        <fo:block><xsl:value-of select="entreprise/codePostal" /></fo:block>
                                     </fo:block>
                                 </fo:table-cell>
                                 <fo:table-cell>
                                     <fo:block text-align="right">
-                                        <fo:block>Facture #00001</fo:block>
-                                        <fo:block>Date d'émission</fo:block>
-                                        <fo:block>aaaa/mm/jj</fo:block>
+                                        <fo:block font-weight="700" margin-bottom="5px">Facture #<xsl:value-of select="format-number(number(id), '00000')"/></fo:block>
+                                        <fo:block font-weight="700">Date d'émission</fo:block>
+                                        <fo:block><xsl:value-of select="util:formatterDate(emission)" /></fo:block>
                                     </fo:block>
                                 </fo:table-cell>
                             </fo:table-row>
@@ -57,7 +65,7 @@
                         <fo:leader leader-pattern="rule" leader-length="100%" rule-style="solid" rule-thickness="2pt"/>
                     </fo:block>
 
-                    <fo:block margin-top="10px" font-size="16px">Nom de l'entreprise</fo:block>
+                    <fo:block margin-top="10px" font-size="16px"><xsl:value-of select="entreprise/nom" /></fo:block>
                     <fo:block margin-bottom="20px" font-size="8px">Ajoutez un message ici pour le client</fo:block>
 
                     <fo:table border-top="solid 1px #cccccc" border-bottom="solid 1px #cccccc" font-size="8px">
@@ -87,7 +95,7 @@
                                     <fo:block>Sous-total</fo:block>
                                 </fo:table-cell>
                                 <fo:table-cell padding-top="15px" padding-bottom="5px" text-align="right">
-                                    <fo:block>0,00$</fo:block>
+                                    <fo:block><xsl:value-of select="format-number(sousTotal, '0.##')"/>$</fo:block>
                                 </fo:table-cell>
                             </fo:table-row>
                             <fo:table-row>
@@ -95,7 +103,9 @@
                                     <fo:block>TPS/TVQ</fo:block>
                                 </fo:table-cell>
                                 <fo:table-cell padding-top="5px" padding-bottom="5px" text-align="right">
-                                    <fo:block>0,00$</fo:block>
+                                    <fo:block><xsl:value-of select="format-number(taxes, '0.##')"/>$</fo:block>
+                                    <!-- <fo:block><xsl:value-of select="util:formatterMontant(number(taxes))"/>$</fo:block> -->
+                                    <!--<fo:block><xsl:copy-of select="util:formatterMontant($taxes)"/></fo:block>-->
                                 </fo:table-cell>
                             </fo:table-row>
                             <fo:table-row border-top="solid 1px #cccccc" font-weight="700">
@@ -103,7 +113,7 @@
                                     <fo:block>Grand total</fo:block>
                                 </fo:table-cell>
                                 <fo:table-cell padding-top="5px" padding-bottom="5px" text-align="right">
-                                    <fo:block>0,00$</fo:block>
+                                    <fo:block><xsl:value-of select="format-number(grandTotal, '0.##')"/>$</fo:block>
                                 </fo:table-cell>
                             </fo:table-row>
                         </fo:table-body>
